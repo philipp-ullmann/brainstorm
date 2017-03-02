@@ -1,0 +1,20 @@
+db:
+  image: mysql:5.7.17
+  environment:
+    MYSQL_DATABASE: brainstorm
+    MYSQL_ROOT_PASSWORD: secret
+
+web:
+  build: .
+  volumes:
+    - .:/root/brainstorm
+  ports:
+    - 3000:3000
+  links:
+    - db
+  environment:
+    DB_HOST: db
+    DB_PORT: 3306
+    DB_NAME: brainstorm
+    DB_USER: root
+    DB_PASSWORD: secret
