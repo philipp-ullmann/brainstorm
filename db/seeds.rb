@@ -1,16 +1,18 @@
 philipp = User.create! username: 'philipp', password: 'secret', password_confirmation: 'secret' 
 rene    = User.create! username: 'rene',    password: 'secret', password_confirmation: 'secret' 
 
-health = philipp.terms.create! name: 'Health'
+philipp.terms.create! name: 'Health'
 
-health.create_children_for! %w{Sleep Stress Exercise Help? Diet}, philipp
+[{user: philipp, parent: 'Health',   children: %w{Sleep Stress Exercise Help? Diet}},
+ {user: rene,    parent: 'Sleep',    children: ['33% of your life', 'Insomnia Tips', 'Insomnia Consequences']},
+ {user: philipp, parent: 'Stress',   children: %w{Causes Solutions Effects}},
+ {user: rene,    parent: 'Exercise', children: ['Warm up', 'Aerobic', 'Toning/Strenght', 'Stretching']},
+ {user: philipp, parent: 'Help?',    children: ['Doctor', 'Dietician', 'Nutrition Aust']},
+ {user: rene,    parent: 'Diet',     children: ['Fruit', 'Vege', 'Breads & Cereals']}].each do |h|
 
-health.children.find_by!(name: 'Sleep').create_children_for! ['33% of your life', 'Insomnia Tips', 'Insomnia Consequences'], rene
+  parent = Term.find_by! name: h[:parent]
 
-health.children.find_by!(name: 'Stress').create_children_for! %w{Causes Solutions Effects}, philipp
-
-health.children.find_by!(name: 'Exercise').create_children_for! ['Warm up', 'Aerobic', 'Toning/Strenght', 'Stretching'], rene
-
-health.children.find_by!(name: 'Help?').create_children_for! ['Doctor', 'Dietician', 'Nutrition Aust'], philipp
-
-health.children.find_by!(name: 'Diet').create_children_for! ['Fruit', 'Vege', 'Breads & Cereals'], rene
+  h[:children].each do |child|
+  	parent.children.create! name: child, user: h[:user]
+  end
+end
