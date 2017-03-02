@@ -23,7 +23,7 @@ RUN apk --update --upgrade add tzdata build-base mysql-dev && \
 
     # Install gems
     echo 'gem: --no-rdoc --no-ri' >> /root/.gemrc && \
-  	bundle install && \
+    bundle install && \
     
     # Cleanup
     rm -rf /tmp/* /var/cache/apk/*
