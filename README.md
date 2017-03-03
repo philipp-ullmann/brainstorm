@@ -12,7 +12,7 @@ The application was generated with `rails new brainstorm -d mysql -J -S --api`. 
 * ruby 2.4.0
 * rails 5.0.2
 
-Start the application with `docker-compose up -d`. Generate test data with `docker-compose exec web rake db:seed`. The application run's on port 3000.
+Start the application with `docker-compose up -d`. Generate test data with `docker-compose exec web rake db:seed`. The application run's on port 3000. Run tests with `docker-compose exec web rake spec`.
 
 ## API
 
