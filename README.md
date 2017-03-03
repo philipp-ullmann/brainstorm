@@ -22,8 +22,8 @@ Registrate a new user:
 
 Authenticate an user:
 
-   curl -H "Content-Type: application/json" -X POST -d '{"username":"philipp","password":"secret"}' http://docker:3000/login 
+    curl -H "Content-Type: application/json" -X POST -d '{"username":"philipp","password":"secret"}' http://docker:3000/login 
 
 List all available brainstorming terms:
 
-   curl -H "Content-Type: application/json" -H "Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE0ODg2MjIzMDB9.aPnTdxCUNL6RLEqdOx4dwMKR69Dh-zHZwl1MSnfu4NE" http://docker:3000
+    curl -H "Content-Type: application/json" -H "Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE0ODg2MjIzMDB9.aPnTdxCUNL6RLEqdOx4dwMKR69Dh-zHZwl1MSnfu4NE" http://docker:3000
