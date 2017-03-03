@@ -7,7 +7,7 @@ class UsersController < ApplicationController
       render :show, status: :created		
 		else
       @errors = @user.errors.full_messages
-      render 'errors/show', status: :bad_request
+      render 'errors/show', status: :unprocessable_entity
 		end
   end
 
