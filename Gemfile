@@ -13,16 +13,18 @@ gem 'bcrypt',   '3.1.11'
 gem 'ancestry', '2.2.2'
 gem 'jwt',      '1.5.6'
 
-# Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible
-# gem 'rack-cors'
+group :development do
+  gem 'listen',                '3.0.8'
+  gem 'spring',                '2.0.1'
+  gem 'spring-watcher-listen', '2.0.1'
+end
 
 group :development, :test do
   gem 'byebug',      '9.0.6', platform: :mri
   gem 'rspec-rails', '3.5.2'
 end
 
-group :development do
-  gem 'listen',                '3.0.8'
-  gem 'spring',                '2.0.1'
-  gem 'spring-watcher-listen', '2.0.1'
+group :test do
+  gem 'factory_girl_rails', '4.8.0'
+  gem 'faker',              '1.7.3'
 end
