@@ -11,6 +11,7 @@ COPY db db
 COPY lib lib
 COPY public public
 COPY doc doc
+COPY spec spec
 ADD config.ru Rakefile Gemfile Gemfile.lock ./
 
 # INSTALL DEPENDENCIES
