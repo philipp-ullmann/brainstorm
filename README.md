@@ -13,3 +13,17 @@ The application was generated with `rails new brainstorm -d mysql -J -S --api`. 
 * rails 5.0.2
 
 Start the application with `docker-compose up -d`. Generate test data with `docker-compose exec web rake db:seed`. The application run's on port 3000.
+
+## API
+
+Registrate a new user:
+
+    curl -H "Content-Type: application/json" -X POST -d '{"username":"test","password":"secret","password_confirmation":"secret"}' http://docker:3000/register
+
+Authenticate an user:
+
+   curl -H "Content-Type: application/json" -X POST -d '{"username":"philipp","password":"secret"}' http://docker:3000/login 
+
+List all available brainstorming terms:
+
+   curl -H "Content-Type: application/json" -H "Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE0ODg2MjIzMDB9.aPnTdxCUNL6RLEqdOx4dwMKR69Dh-zHZwl1MSnfu4NE" http://docker:3000

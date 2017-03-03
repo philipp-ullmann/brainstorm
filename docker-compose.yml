@@ -5,6 +5,8 @@ db:
     MYSQL_ROOT_PASSWORD: secret
 
 web:
+  tty: true
+  stdin_open: true
   build: .
   volumes:
     - .:/root/brainstorm
@@ -13,6 +15,7 @@ web:
   links:
     - db
   environment:
+    RAILS_ENV: development
     DB_HOST: db
     DB_PORT: 3306
     DB_NAME: brainstorm
