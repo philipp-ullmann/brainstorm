@@ -2,7 +2,7 @@
 
 This is a demo brainstorming rails JSON API application. At first an user makes a registration with an unique username. The login is done via username and password. After successful login an user can list all existing brainstorming trees, can add a new term to an existing brainstorming tree or create a new brainstorming tree.
 
-->![Kiku](doc/images/health.jpg)<-
+![Kiku](doc/images/health.jpg)
 
 The application was generated with `rails new brainstorm -d mysql -J -S --api`. Used technologies and versions:
 
