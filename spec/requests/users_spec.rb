@@ -1,8 +1,8 @@
 require 'rails_helper'
 
-RSpec.describe 'Registration API', type: :request do
+RSpec.describe 'User API', type: :request do
 
-  describe 'POST /register.json' do
+  describe 'POST /register' do
 		let(:valid_attr) { attributes_for(:user) }
 
     context 'when the user is valid' do

@@ -19,6 +19,7 @@ ActiveRecord::Schema.define(version: 20170302153429) do
     t.datetime "updated_at", null: false
     t.string   "ancestry"
     t.index ["ancestry"], name: "index_terms_on_ancestry", using: :btree
+    t.index ["name", "ancestry"], name: "index_terms_on_name_and_ancestry", unique: true, using: :btree
     t.index ["user_id"], name: "index_terms_on_user_id", using: :btree
   end
 

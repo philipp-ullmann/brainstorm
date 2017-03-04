@@ -9,5 +9,7 @@ class CreateTerms < ActiveRecord::Migration[5.0]
 
 			t.string :ancestry, index: true
     end
+
+    add_index :terms, [:name, :ancestry], unique: true
   end
 end
