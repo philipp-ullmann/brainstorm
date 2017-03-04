@@ -1,1 +1,1 @@
-json.partial! 'term', term: @term
+json.partial! 'term', locals: { term: @term, children: @children }

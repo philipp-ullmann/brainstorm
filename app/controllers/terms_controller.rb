@@ -11,11 +11,11 @@ class TermsController < ApplicationController
   # GET /terms/:id
   # Show a complete brainstorming tree with all corresponding terms.
   def show
-    subtree = Term.roots.find(params[:id]).subtree
+    @term = Term.roots.find(params[:id])
 
     # Load all necessary users within a single SQL query. Important for performance.
-    @users = User.select(:id, :username).find(subtree.map(&:user_id)).group_by(&:id)
-    @term  = subtree.arrange_serializable.first
+    @users    = User.select(:id, :username).find(@term.subtree.map(&:user_id)).group_by(&:id)
+    @children = @term.descendants.arrange
   end
 
   # POST /terms
@@ -25,7 +25,7 @@ class TermsController < ApplicationController
     @term.user = current_user
 
 		if @term.save
-      @term = @term.subtree.arrange_serializable.first
+      @children = @term.descendants.arrange
       @users = [current_user].group_by(&:id)
 
       render :show, status: :created		
