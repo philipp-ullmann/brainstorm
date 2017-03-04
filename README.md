@@ -44,13 +44,41 @@ Start the application with `docker-compose up -d`. Generate test data with `dock
 
 **List all available brainstorming terms:**
 
-    curl -H "Content-Type: application/json" -H "Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE0ODg2MjIzMDB9.aPnTdxCUNL6RLEqdOx4dwMKR69Dh-zHZwl1MSnfu4NE" http://docker:3000
+    curl -H "Content-Type: application/json" -H "Authorization: <auth_token>" http://docker:3000
 
 ```json
 [
   {
-    "id":   1,
-    "name": "Health"
+    "id":         1,
+    "name":       "Health",
+    "owned_by":   "philipp",
+    "created_at": "2017-03-04 09:06:33",
+    "updated_at": "2017-03-04 09:06:33"
   }
 ]
+```
+
+**Show a whole brainstorming tree:**
+
+    curl -H "Content-Type: application/json" -H "Authorization: <auth_token>" http://docker:3000/terms/1
+
+```json
+{
+  "id":         1,
+  "name":       "Health",
+  "owned_by":   "philipp",
+  "created_at": "2017-03-04 09:06:33",
+  "updated_at": "2017-03-04 09:06:33",
+  "children":
+    [
+      {
+        "id":         2,
+        "name":       "Sleep",
+        "owned_by":   "philipp",
+        "created_at": "2017-03-04 09:06:33",
+        "updated_at": "2017-03-04 09:06:33",
+        "children":   []
+      }
+    ]
+}
 ```
