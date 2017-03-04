@@ -1,3 +1,4 @@
+# Exception handling.
 module ExceptionHandler
   extend ActiveSupport::Concern
 

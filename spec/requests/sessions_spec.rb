@@ -2,6 +2,9 @@ require 'rails_helper'
 
 RSpec.describe 'Session API', type: :request do
 
+  # POST /login
+  # ############################################################
+
   describe 'POST /login' do
 		let(:user) { create(:user) }
 

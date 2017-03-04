@@ -1,4 +1,8 @@
+# User management.
 class UsersController < ApplicationController
+
+  # POST /register
+  # Creates a new user with username and password.
   def create
     @user = User.new user_params
 

@@ -2,6 +2,9 @@ require 'rails_helper'
 
 RSpec.describe 'User API', type: :request do
 
+  # POST /register
+  # ############################################################
+
   describe 'POST /register' do
 		let(:valid_attr) { attributes_for(:user) }
 
