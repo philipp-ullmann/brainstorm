@@ -13,9 +13,12 @@ class TermsController < ApplicationController
   def show
     @term = Term.roots.find(params[:id])
 
-    # Load all necessary users within a single SQL query. Important for performance.
+    # Load all necessary users within a single SQL query. Performance!
     @users    = User.select(:id, :username).find(@term.subtree.map(&:user_id)).group_by(&:id)
     @children = @term.descendants.arrange
+
+    render json: TermTreeView.new(@term, @children, @users).build,
+           status: :ok		
   end
 
   # POST /terms
@@ -30,7 +33,8 @@ class TermsController < ApplicationController
       @children = @term.descendants.arrange
       @users = [current_user].group_by(&:id)
 
-      render :show, status: :created		
+      render json: TermTreeView.new(@term, @children, @users).build,
+             status: :created		
 		else
       @errors = @term.errors.full_messages
       render 'errors/show', status: :unprocessable_entity
