@@ -4,7 +4,7 @@ This is a demo brainstorming rails JSON API application. At first an user makes 
 
 ![Kiku](doc/images/health.jpg)
 
-The application was generated with `rails new brainstorm -d mysql -J -S --api`. Used technologies and versions:
+Used technologies and versions:
 
 * docker         1.13.1
 * docker-compose 1.11.1
@@ -86,6 +86,21 @@ Start the application with `docker-compose up -d`. Generate test data with `dock
 **Create a new root brainstorming term:**
 
     curl -H "Content-Type: application/json" -H "Authorization: <auth_token>" -X POST -d '{"name":"Climbing"}' http://docker:3000/terms
+
+```json
+{
+  "id":         3,
+  "name":       "Climbing",
+  "owned_by":   "philipp",
+  "created_at": "2017-03-04 09:06:33",
+  "updated_at": "2017-03-04 09:06:33",
+  "children":   []
+}
+```
+
+**Create a new child term:**
+
+    curl -H "Content-Type: application/json" -H "Authorization: <auth_token>" -X POST -d '{"name":"Climbing"}' http://docker:3000/terms?parent_id=1
 
 ```json
 {

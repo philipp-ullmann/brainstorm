@@ -206,5 +206,23 @@ RSpec.describe 'Brainstorm API', type: :request do
         expect(health.children.find_by(name: 'Climbing')).not_to be_nil 
       end
     end
+
+    context 'when an user tries to create a new child term for a parent that does not exist' do
+      before { post("/terms?parent_id=0",
+                    params:  { name: 'Climbing' },
+                    headers: { accept:        'application/json',
+                               authorization: valid_token }) }
+
+			it 'returns status code 404' do
+        expect(response).to have_http_status(404)
+      end
+
+			it 'returns an error' do
+        expect(json).not_to 			be_empty
+        expect(json['errors']).to match_array(["Couldn't find Term with 'id'=0"])
+
+        expect(Term.find_by(name: 'Climbing')).to be_nil 
+      end
+    end
   end
 end
