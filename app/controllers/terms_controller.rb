@@ -21,8 +21,10 @@ class TermsController < ApplicationController
   # POST /terms
   # Create a new root brainstorming term.
   def create
-    @term      = Term.new term_params
-    @term.user = current_user
+    @parent      = params[:parent_id] ? Term.find(params[:parent_id]) : nil
+    @term        = Term.new term_params
+    @term.user   = current_user
+    @term.parent = @parent
 
 		if @term.save
       @children = @term.descendants.arrange

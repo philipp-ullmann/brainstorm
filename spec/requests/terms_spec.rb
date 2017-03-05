@@ -178,4 +178,33 @@ RSpec.describe 'Brainstorm API', type: :request do
       end
     end
   end
+
+  # POST /terms?parent_id=:id
+  # ############################################################
+
+  describe 'POST /terms' do
+
+    context 'when an user successfully creates a new child term' do
+      before { post("/terms?parent_id=#{health.id}",
+                    params:  { name: 'Climbing' },
+                    headers: { accept:        'application/json',
+                               authorization: valid_token }) }
+
+			it 'returns status code 201' do
+        expect(response).to have_http_status(201)
+      end
+
+      it 'returns the child tree' do
+        expect(json).not_to               be_empty
+        expect(json['id']).to             be_an(Integer)
+        expect(json['name']).to           eq('Climbing')
+        expect(json['owned_by']).to       eq(current_user.username)
+        expect(json['created_at']).not_to be_empty
+        expect(json['updated_at']).not_to be_empty
+        expect(json['children']).to       be_empty
+
+        expect(health.children.find_by(name: 'Climbing')).not_to be_nil 
+      end
+    end
+  end
 end
