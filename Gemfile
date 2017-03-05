@@ -8,7 +8,6 @@ end
 gem 'rails',    '5.0.2'
 gem 'mysql2',   '0.4.5'
 gem 'puma',     '3.7.1'
-gem 'jbuilder', '2.6.3'
 gem 'bcrypt',   '3.1.11'
 gem 'ancestry', '2.2.2'
 gem 'jwt',      '1.5.6'

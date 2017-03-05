@@ -8,4 +8,10 @@ class User < ApplicationRecord
     o.validates :password, confirmation: true
     o.validates :password_confirmation
   end
+
+  def serialize
+    { id:         id,
+      username:   username,
+      auth_token: JsonWebToken.encode({ user_id: id }) }
+  end
 end

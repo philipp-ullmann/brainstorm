@@ -4,14 +4,13 @@ class UsersController < ApplicationController
   # POST /register
   # Creates a new user with username and password.
   def create
-    @user = User.new user_params
+    user = User.new user_params
 
-		if @user.save
-  	  @auth_token = JsonWebToken.encode({ user_id: @user.id })
-      render :show, status: :created		
+		if user.save
+      render json: user.serialize, status: :created		
 		else
-      @errors = @user.errors.full_messages
-      render 'errors/show', status: :unprocessable_entity
+      render json:   { errors: user.errors.full_messages },
+             status: :unprocessable_entity
 		end
   end
 

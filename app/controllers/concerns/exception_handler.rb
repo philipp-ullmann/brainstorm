@@ -4,8 +4,7 @@ module ExceptionHandler
 
   included do
     rescue_from ActiveRecord::RecordNotFound do |e|
-      @errors = [e.message]
-      render 'errors/show', status: :not_found
+      render json: { errors: [e.message] }, status: :not_found
     end
   end
 end

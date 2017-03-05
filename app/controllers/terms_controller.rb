@@ -5,39 +5,38 @@ class TermsController < ApplicationController
   # GET /
   # List all available brainstorming root terms.
   def index
-    @terms = Term.roots.includes(:user)
+    render json: Term.roots
+                     .includes(:user)
+                     .map(&:serialize_list),
+           status: :ok
   end
 
   # GET /terms/:id
   # Show a complete brainstorming tree with all corresponding terms.
   def show
-    @term = Term.roots.find(params[:id])
+    term = Term.roots.find params[:id]
 
     # Load all necessary users within a single SQL query. Performance!
-    @users    = User.select(:id, :username).find(@term.subtree.map(&:user_id)).group_by(&:id)
-    @children = @term.descendants.arrange
+    users = User.select(:id, :username).find(term.subtree.map(&:user_id)).group_by(&:id)
 
-    render json: TermTreeView.new(@term, @children, @users).build,
-           status: :ok		
+    render json: term.serialize(users), status: :ok		
   end
 
   # POST /terms
   # Create a new root brainstorming term.
   def create
-    @parent      = params[:parent_id] ? Term.find(params[:parent_id]) : nil
-    @term        = Term.new term_params
-    @term.user   = current_user
-    @term.parent = @parent
+    parent      = params[:parent_id] ? Term.find(params[:parent_id]) : nil
+    term        = Term.new term_params
+    term.user   = current_user
+    term.parent = parent
 
-		if @term.save
-      @children = @term.descendants.arrange
-      @users = [current_user].group_by(&:id)
+		if term.save
+      users = [current_user].group_by(&:id)
 
-      render json: TermTreeView.new(@term, @children, @users).build,
-             status: :created		
+      render json: term.serialize(users), status: :created		
 		else
-      @errors = @term.errors.full_messages
-      render 'errors/show', status: :unprocessable_entity
+      render json:   { errors: term.errors.full_messages },
+             status: :unprocessable_entity
 		end
   end
 

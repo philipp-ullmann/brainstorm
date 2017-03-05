@@ -12,7 +12,6 @@ class ApplicationController < ActionController::API
       @current_user = nil
 		end
   end
-  helper_method :current_user
 
   # Returns the JWT session payload.
   def payload
@@ -29,8 +28,8 @@ class ApplicationController < ActionController::API
     if current_user
       true
     else
-      @errors = ['Invalid Request']
-      render 'errors/show', status: :unauthorized
+      render json:   { errors: ['Invalid Request'] },
+             status: :unauthorized
     end
   end
 end

@@ -1,6 +1,5 @@
 # Brainstorming tree view generation.
-# Necessary because recursions (Tree build) are too slow with JBuilder.
-class TermTreeView
+class TermTree
   def initialize(root, children, users)
     @root     = root
     @children = children
