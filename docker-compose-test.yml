@@ -1,0 +1,18 @@
+db:
+  image: mysql:5.7.17
+  environment:
+    MYSQL_DATABASE: brainstorm_test
+    MYSQL_ROOT_PASSWORD: secret
+
+web:
+  build: .
+  command: ./bin/test.sh
+  links:
+    - db
+  environment:
+    RAILS_ENV: test
+    DB_HOST: db
+    DB_PORT: 3306
+    DB_NAME: brainstorm_test
+    DB_USER: root
+    DB_PASSWORD: secret
