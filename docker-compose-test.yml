@@ -6,7 +6,7 @@ db:
 
 web:
   build: .
-  command: ./bin/test.sh
+  command: sleep 5 && ./bin/test.sh
   links:
     - db
   environment:
