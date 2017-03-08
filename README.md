@@ -1,4 +1,4 @@
-# Demo Brainstorming Rails API application
+# Demo Brainstorming Rails API application [![Build Status](https://travis-ci.org/philipp-ullmann/brainstorm.svg?branch=master)](https://travis-ci.org/philipp-ullmann/brainstorm)
 
 This is a demo brainstorming rails JSON API application. At first an user makes a registration with an unique username. The login is done via username and password. After successful login an user can list all existing brainstorming trees, can add a new term to an existing brainstorming tree or create a new brainstorming tree.
 
