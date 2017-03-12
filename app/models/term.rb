@@ -5,7 +5,8 @@ class Term < ApplicationRecord
 
   with_options presence: true do |o|
     o.validates :user
-    o.validates :name, uniqueness: { scope: :ancestry, case_sensitive: false }
+    o.validates :name, length: { maximum: 50 },
+                       uniqueness: { scope: :ancestry, case_sensitive: false }
   end
 
   def serialize(users)

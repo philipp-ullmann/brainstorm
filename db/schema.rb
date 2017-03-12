@@ -13,10 +13,10 @@
 ActiveRecord::Schema.define(version: 20170302153429) do
 
   create_table "terms", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
-    t.string   "name",       null: false
-    t.integer  "user_id",    null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.string   "name",       limit: 50, null: false
+    t.integer  "user_id",               null: false
+    t.datetime "created_at",            null: false
+    t.datetime "updated_at",            null: false
     t.string   "ancestry"
     t.index ["ancestry"], name: "index_terms_on_ancestry", using: :btree
     t.index ["name", "ancestry"], name: "index_terms_on_name_and_ancestry", unique: true, using: :btree

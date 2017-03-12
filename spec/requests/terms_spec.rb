@@ -154,6 +154,22 @@ RSpec.describe 'Brainstorm API', type: :request do
       end
     end
 
+    context 'with a name that has 51 characters' do
+      before { post("/terms",
+                    params:  { name: Faker::Lorem.characters(51) },
+                    headers: { accept:        'application/json',
+                               authorization: valid_token }) }
+
+      it 'returns status code 422' do
+        expect(response).to have_http_status(422)
+      end
+
+      it 'returns an error message' do
+        expect(json).not_to       be_empty
+        expect(json['errors']).to match_array(['Name is too long (maximum is 50 characters)'])
+      end
+    end
+
     context 'with a name that already exists' do
       before { post("/terms",
                     params:  { name: health.name },
@@ -274,6 +290,24 @@ RSpec.describe 'Brainstorm API', type: :request do
       it 'returns an error message' do
         expect(json).not_to       be_empty
         expect(json['errors']).to match_array(["Name can't be blank"])
+
+        expect(Term.find_by(name: sleep.name)).not_to be_nil 
+      end
+    end
+
+    context 'with a name that has 51 characters' do
+      before { put("/terms/#{sleep.id}",
+                    params:  { name: Faker::Lorem.characters(51) },
+                    headers: { accept:        'application/json',
+                               authorization: JsonWebToken.encode({ user_id: sleep.user.id }) }) }
+
+      it 'returns status code 422' do
+        expect(response).to have_http_status(422)
+      end
+
+      it 'returns an error message' do
+        expect(json).not_to       be_empty
+        expect(json['errors']).to match_array(['Name is too long (maximum is 50 characters)'])
 
         expect(Term.find_by(name: sleep.name)).not_to be_nil 
       end
