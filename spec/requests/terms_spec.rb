@@ -5,7 +5,7 @@ RSpec.describe 'Brainstorm API', type: :request do
   let!(:sleep)        { create(:term, name: 'Sleep', parent: health) }
   let!(:stress)       { create(:term, name: 'Stress', parent: health) }
   let!(:current_user) { health.user }
-	let(:valid_token)   { JsonWebToken.encode({ user_id: current_user.id }) }
+  let(:valid_token)   { JsonWebToken.encode({ user_id: current_user.id }) }
 
   # GET /
   # ############################################################
@@ -16,12 +16,12 @@ RSpec.describe 'Brainstorm API', type: :request do
       before { get('/', headers: { accept:        'application/json',
                                    authorization: valid_token }) }
 
-			it 'returns status code 200' do
+      it 'returns status code 200' do
         expect(response).to have_http_status(200)
       end
 
-			it 'returns a list of available root brainstorming terms' do
-        expect(json).not_to 			           be_empty
+      it 'returns a list of available root brainstorming terms' do
+        expect(json).not_to                  be_empty
         expect(json.size).to                 eq(1)
         expect(json[0]['id']).to             eq(health.id)
         expect(json[0]['name']).to           eq(health.name)
@@ -34,12 +34,12 @@ RSpec.describe 'Brainstorm API', type: :request do
     context 'without JWT token' do
       before { get('/', headers: { accept: 'application/json' }) }
 
-			it 'returns status code 401' do
+      it 'returns status code 401' do
         expect(response).to have_http_status(401)
       end
 
-			it 'returns an error message' do
-        expect(json).not_to 			be_empty
+      it 'returns an error message' do
+        expect(json).not_to       be_empty
         expect(json['errors']).to match_array(['Invalid Request'])
       end
     end
@@ -55,7 +55,7 @@ RSpec.describe 'Brainstorm API', type: :request do
                    headers: { accept:        'application/json',
                               authorization: valid_token }) }
 
-			it 'returns status code 200' do
+      it 'returns status code 200' do
         expect(response).to have_http_status(200)
       end
 
@@ -88,12 +88,12 @@ RSpec.describe 'Brainstorm API', type: :request do
                    headers: { accept:        'application/json',
                               authorization: valid_token }) }
 
-			it 'returns status code 404' do
+      it 'returns status code 404' do
         expect(response).to have_http_status(404)
       end
 
-			it 'returns an error message' do
-        expect(json).not_to 			be_empty
+      it 'returns an error message' do
+        expect(json).not_to       be_empty
         expect(json['errors']).to match_array(["Couldn't find Term with 'id'=#{sleep.id} [WHERE `terms`.`ancestry` IS NULL]"])
       end
     end
@@ -101,12 +101,12 @@ RSpec.describe 'Brainstorm API', type: :request do
     context 'without JWT token' do
       before { get("/terms/#{health.id}", headers: { accept: 'application/json' }) }
 
-			it 'returns status code 401' do
+      it 'returns status code 401' do
         expect(response).to have_http_status(401)
       end
 
-			it 'returns an error message' do
-        expect(json).not_to 			be_empty
+      it 'returns an error message' do
+        expect(json).not_to       be_empty
         expect(json['errors']).to match_array(['Invalid Request'])
       end
     end
@@ -123,7 +123,7 @@ RSpec.describe 'Brainstorm API', type: :request do
                     headers: { accept:        'application/json',
                                authorization: valid_token }) }
 
-			it 'returns status code 201' do
+      it 'returns status code 201' do
         expect(response).to have_http_status(201)
       end
 
@@ -144,7 +144,7 @@ RSpec.describe 'Brainstorm API', type: :request do
                     headers: { accept:        'application/json',
                                authorization: valid_token }) }
 
-			it 'returns status code 422' do
+      it 'returns status code 422' do
         expect(response).to have_http_status(422)
       end
 
@@ -160,7 +160,7 @@ RSpec.describe 'Brainstorm API', type: :request do
                     headers: { accept:        'application/json',
                                authorization: valid_token }) }
 
-			it 'returns status code 422' do
+      it 'returns status code 422' do
         expect(response).to have_http_status(422)
       end
 
@@ -175,12 +175,12 @@ RSpec.describe 'Brainstorm API', type: :request do
                     params:  { name: 'Climbing' },
                     headers: { accept: 'application/json', }) }
 
-			it 'returns status code 401' do
+      it 'returns status code 401' do
         expect(response).to have_http_status(401)
       end
 
-			it 'returns an error message' do
-        expect(json).not_to 			be_empty
+      it 'returns an error message' do
+        expect(json).not_to       be_empty
         expect(json['errors']).to match_array(['Invalid Request'])
       end
     end
@@ -197,7 +197,7 @@ RSpec.describe 'Brainstorm API', type: :request do
                     headers: { accept:        'application/json',
                                authorization: valid_token }) }
 
-			it 'returns status code 201' do
+      it 'returns status code 201' do
         expect(response).to have_http_status(201)
       end
 
@@ -220,12 +220,12 @@ RSpec.describe 'Brainstorm API', type: :request do
                     headers: { accept:        'application/json',
                                authorization: valid_token }) }
 
-			it 'returns status code 404' do
+      it 'returns status code 404' do
         expect(response).to have_http_status(404)
       end
 
-			it 'returns an error message' do
-        expect(json).not_to 			be_empty
+      it 'returns an error message' do
+        expect(json).not_to       be_empty
         expect(json['errors']).to match_array(["Couldn't find Term with 'id'=0"])
 
         expect(Term.find_by(name: 'Climbing')).to be_nil 
@@ -244,7 +244,7 @@ RSpec.describe 'Brainstorm API', type: :request do
                    headers: { accept:        'application/json',
                               authorization: JsonWebToken.encode({ user_id: sleep.user.id }) }) }
 
-			it 'returns status code 200' do
+      it 'returns status code 200' do
         expect(response).to have_http_status(200)
       end
 
@@ -267,7 +267,7 @@ RSpec.describe 'Brainstorm API', type: :request do
                     headers: { accept:        'application/json',
                                authorization: JsonWebToken.encode({ user_id: sleep.user.id }) }) }
 
-			it 'returns status code 422' do
+      it 'returns status code 422' do
         expect(response).to have_http_status(422)
       end
 
@@ -285,7 +285,7 @@ RSpec.describe 'Brainstorm API', type: :request do
                     headers: { accept:        'application/json',
                                authorization: JsonWebToken.encode({ user_id: sleep.user.id }) }) }
 
-			it 'returns status code 422' do
+      it 'returns status code 422' do
         expect(response).to have_http_status(422)
       end
 
@@ -302,12 +302,12 @@ RSpec.describe 'Brainstorm API', type: :request do
                     params:  { name: 'Exercise' },
                     headers: { accept: 'application/json', }) }
 
-			it 'returns status code 401' do
+      it 'returns status code 401' do
         expect(response).to have_http_status(401)
       end
 
-			it 'returns an error message' do
-        expect(json).not_to 			be_empty
+      it 'returns an error message' do
+        expect(json).not_to       be_empty
         expect(json['errors']).to match_array(['Invalid Request'])
 
         expect(Term.find_by(name: 'Exercise')).to be_nil 
