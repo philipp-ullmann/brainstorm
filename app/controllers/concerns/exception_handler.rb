@@ -7,7 +7,7 @@ module ExceptionHandler
       render json: { errors: [e.message] }, status: :not_found
     end
 
-    rescue_from Pundit::NotAuthorizedError do |e|
+    rescue_from Pundit::NotAuthorizedError do
       render json:   { errors: ['You are not authorized to perform this action'] },
              status: :unauthorized
     end
