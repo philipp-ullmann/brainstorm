@@ -9,6 +9,7 @@ class User < ApplicationRecord
     o.validates :password_confirmation
   end
 
+  # Serializes an user.
   def serialize
     { id:         id,
       username:   username,

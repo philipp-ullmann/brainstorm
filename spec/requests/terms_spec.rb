@@ -40,7 +40,7 @@ RSpec.describe 'Brainstorm API', type: :request do
 
       it 'returns an error message' do
         expect(json).not_to       be_empty
-        expect(json['errors']).to match_array(['Invalid Request'])
+        expect(json['errors']).to match_array(['You are not authorized to perform this action'])
       end
     end
   end
@@ -107,7 +107,7 @@ RSpec.describe 'Brainstorm API', type: :request do
 
       it 'returns an error message' do
         expect(json).not_to       be_empty
-        expect(json['errors']).to match_array(['Invalid Request'])
+        expect(json['errors']).to match_array(['You are not authorized to perform this action'])
       end
     end
   end
@@ -197,7 +197,7 @@ RSpec.describe 'Brainstorm API', type: :request do
 
       it 'returns an error message' do
         expect(json).not_to       be_empty
-        expect(json['errors']).to match_array(['Invalid Request'])
+        expect(json['errors']).to match_array(['You are not authorized to perform this action'])
       end
     end
   end
@@ -331,6 +331,24 @@ RSpec.describe 'Brainstorm API', type: :request do
       end
     end
 
+    context 'as an user that does not own the term' do
+      before { put("/terms/#{sleep.id}",
+                    params:  { name: 'Exercise' },
+                    headers: { accept:        'application/json',
+                               authorization: JsonWebToken.encode({ user_id: health.user.id }) }) }
+
+      it 'returns status code 401' do
+        expect(response).to have_http_status(401)
+      end
+
+      it 'returns an error message' do
+        expect(json).not_to       be_empty
+        expect(json['errors']).to match_array(['You are not authorized to perform this action'])
+
+        expect(Term.find_by(name: 'Exercise')).to be_nil 
+      end
+    end
+
     context 'without JWT token' do
       before { put("/terms/#{sleep.id}",
                     params:  { name: 'Exercise' },
@@ -342,7 +360,7 @@ RSpec.describe 'Brainstorm API', type: :request do
 
       it 'returns an error message' do
         expect(json).not_to       be_empty
-        expect(json['errors']).to match_array(['Invalid Request'])
+        expect(json['errors']).to match_array(['You are not authorized to perform this action'])
 
         expect(Term.find_by(name: 'Exercise')).to be_nil 
       end

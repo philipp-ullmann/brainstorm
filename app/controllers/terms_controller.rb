@@ -33,10 +33,11 @@ class TermsController < ApplicationController
 
   # PUT /terms/:id
   # Updates the name of an existing term.
-  # TODO: Check ownership
   # TODO: Only allow updates of leaf terms.
   def update
     term = Term.find params[:id]    
+    
+    authorize term
     term.update_attributes(term_params)
 
     render_item term, :ok
