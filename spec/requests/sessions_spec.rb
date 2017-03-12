@@ -8,7 +8,7 @@ RSpec.describe 'Session API', type: :request do
   describe 'POST /login' do
 		let(:user) { create(:user) }
 
-    context 'when the login is successful' do
+    context 'with valid credentials' do
       before { post('/login',
 										params:  { username: user.username,
                                password: 'secret' },
@@ -18,7 +18,7 @@ RSpec.describe 'Session API', type: :request do
         expect(response).to have_http_status(200)
       end
 
-			it 'returns the user' do
+			it 'returns the logged in user' do
         expect(json).not_to 							be_empty
         expect(json['id']).to 						eq(user.id)
         expect(json['username']).to 			eq(user.username)
@@ -26,7 +26,7 @@ RSpec.describe 'Session API', type: :request do
       end
     end
 
-    context 'when the username does not exist' do
+    context 'with an username that does not exist' do
       before { post('/login',
 										params:  { username: 'unknown',
                                password: 'secret' },
@@ -36,13 +36,13 @@ RSpec.describe 'Session API', type: :request do
         expect(response).to have_http_status(401)
       end
 
-			it 'returns an error' do
+			it 'returns an error message' do
         expect(json).not_to 			be_empty
         expect(json['errors']).to match_array(['Invalid username / password'])
       end
     end
 
-    context 'when the password does not match' do
+    context 'with a wrong password' do
       before { post('/login',
 										params:  { username: user.username,
                                password: 'Secret' },
@@ -52,7 +52,7 @@ RSpec.describe 'Session API', type: :request do
         expect(response).to have_http_status(401)
       end
 
-			it 'returns an error' do
+			it 'returns an error message' do
         expect(json).not_to 			be_empty
         expect(json['errors']).to match_array(['Invalid username / password'])
       end

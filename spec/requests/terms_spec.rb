@@ -12,7 +12,7 @@ RSpec.describe 'Brainstorm API', type: :request do
 
   describe 'GET /' do
 
-    context 'when an user is authenticated' do
+    context 'with valid JWT token' do
       before { get('/', headers: { accept:        'application/json',
                                    authorization: valid_token }) }
 
@@ -31,14 +31,14 @@ RSpec.describe 'Brainstorm API', type: :request do
       end
     end
 
-    context 'when an user is not authenticated' do
+    context 'without JWT token' do
       before { get('/', headers: { accept: 'application/json' }) }
 
 			it 'returns status code 401' do
         expect(response).to have_http_status(401)
       end
 
-			it 'returns an error' do
+			it 'returns an error message' do
         expect(json).not_to 			be_empty
         expect(json['errors']).to match_array(['Invalid Request'])
       end
@@ -50,7 +50,7 @@ RSpec.describe 'Brainstorm API', type: :request do
 
   describe 'GET /terms/:id' do
 
-    context 'when an user tries to view a root term' do
+    context 'when :id is a root term' do
       before { get("/terms/#{health.id}",
                    headers: { accept:        'application/json',
                               authorization: valid_token }) }
@@ -83,7 +83,7 @@ RSpec.describe 'Brainstorm API', type: :request do
       end
     end
 
-    context 'when an user tries to view a child term' do
+    context 'when :id is a child term' do
       before { get("/terms/#{sleep.id}",
                    headers: { accept:        'application/json',
                               authorization: valid_token }) }
@@ -92,20 +92,20 @@ RSpec.describe 'Brainstorm API', type: :request do
         expect(response).to have_http_status(404)
       end
 
-			it 'returns an error' do
+			it 'returns an error message' do
         expect(json).not_to 			be_empty
         expect(json['errors']).to match_array(["Couldn't find Term with 'id'=#{sleep.id} [WHERE `terms`.`ancestry` IS NULL]"])
       end
     end
 
-    context 'when an user is not authenticated' do
+    context 'without JWT token' do
       before { get("/terms/#{health.id}", headers: { accept: 'application/json' }) }
 
 			it 'returns status code 401' do
         expect(response).to have_http_status(401)
       end
 
-			it 'returns an error' do
+			it 'returns an error message' do
         expect(json).not_to 			be_empty
         expect(json['errors']).to match_array(['Invalid Request'])
       end
@@ -117,7 +117,7 @@ RSpec.describe 'Brainstorm API', type: :request do
 
   describe 'POST /terms' do
 
-    context 'when an user successfully creates a new brainstorming root term' do
+    context 'with valid name' do
       before { post("/terms",
                     params:  { name: 'Climbing' },
                     headers: { accept:        'application/json',
@@ -127,7 +127,7 @@ RSpec.describe 'Brainstorm API', type: :request do
         expect(response).to have_http_status(201)
       end
 
-      it 'returns the brainstorming tree' do
+      it 'returns the new brainstorming tree' do
         expect(json).not_to               be_empty
         expect(json['id']).to             be_an(Integer)
         expect(json['name']).to           eq('Climbing')
@@ -138,7 +138,7 @@ RSpec.describe 'Brainstorm API', type: :request do
       end
     end
 
-    context 'when an user tries to create a new brainstorming root term with an empty name' do
+    context 'with an empty name' do
       before { post("/terms",
                     params:  { name: '' },
                     headers: { accept:        'application/json',
@@ -154,7 +154,7 @@ RSpec.describe 'Brainstorm API', type: :request do
       end
     end
 
-    context 'when an user tries to create a new brainstorming root term with an name that already exists' do
+    context 'with a name that already exists' do
       before { post("/terms",
                     params:  { name: health.name },
                     headers: { accept:        'application/json',
@@ -170,7 +170,7 @@ RSpec.describe 'Brainstorm API', type: :request do
       end
     end
 
-    context 'when an not authenticated user tries to create a new brainstorming root term' do
+    context 'without a JWT token' do
       before { post("/terms",
                     params:  { name: 'Climbing' },
                     headers: { accept: 'application/json', }) }
@@ -179,7 +179,7 @@ RSpec.describe 'Brainstorm API', type: :request do
         expect(response).to have_http_status(401)
       end
 
-			it 'returns an error' do
+			it 'returns an error message' do
         expect(json).not_to 			be_empty
         expect(json['errors']).to match_array(['Invalid Request'])
       end
@@ -189,9 +189,9 @@ RSpec.describe 'Brainstorm API', type: :request do
   # POST /terms?parent_id=:id
   # ############################################################
 
-  describe 'POST /terms' do
+  describe 'POST /terms?parent_id=:id' do
 
-    context 'when an user successfully creates a new child term' do
+    context 'with a valid name' do
       before { post("/terms?parent_id=#{health.id}",
                     params:  { name: 'Climbing' },
                     headers: { accept:        'application/json',
@@ -214,7 +214,7 @@ RSpec.describe 'Brainstorm API', type: :request do
       end
     end
 
-    context 'when an user tries to create a new child term for a parent that does not exist' do
+    context 'with a parent id that does not exist' do
       before { post("/terms?parent_id=0",
                     params:  { name: 'Climbing' },
                     headers: { accept:        'application/json',
@@ -224,7 +224,7 @@ RSpec.describe 'Brainstorm API', type: :request do
         expect(response).to have_http_status(404)
       end
 
-			it 'returns an error' do
+			it 'returns an error message' do
         expect(json).not_to 			be_empty
         expect(json['errors']).to match_array(["Couldn't find Term with 'id'=0"])
 
@@ -238,7 +238,7 @@ RSpec.describe 'Brainstorm API', type: :request do
 
   describe 'PUT /terms/:id' do
 
-    context 'when an user successfully updates the name of a term' do
+    context 'with a valid name' do
       before { put("/terms/#{sleep.id}",
                    params:  { name: 'Exercise' },
                    headers: { accept:        'application/json',
@@ -248,7 +248,7 @@ RSpec.describe 'Brainstorm API', type: :request do
         expect(response).to have_http_status(200)
       end
 
-      it 'returns the term' do
+      it 'returns the term tree' do
         expect(json).not_to               be_empty
         expect(json['id']).to             eq(sleep.id)
         expect(json['name']).to           eq('Exercise')
@@ -261,7 +261,7 @@ RSpec.describe 'Brainstorm API', type: :request do
       end
     end
 
-    context 'when an user tries to update a term with an empty name' do
+    context 'with an empty name' do
       before { put("/terms/#{sleep.id}",
                     params:  { name: '' },
                     headers: { accept:        'application/json',
@@ -279,7 +279,7 @@ RSpec.describe 'Brainstorm API', type: :request do
       end
     end
 
-    context 'when an user tries to update a term with an name that already exists' do
+    context 'with an name that already exists' do
       before { put("/terms/#{sleep.id}",
                     params:  { name: stress.name },
                     headers: { accept:        'application/json',
@@ -297,7 +297,7 @@ RSpec.describe 'Brainstorm API', type: :request do
       end
     end
 
-    context 'when an not authenticated user tries to update a term' do
+    context 'without JWT token' do
       before { put("/terms/#{sleep.id}",
                     params:  { name: 'Exercise' },
                     headers: { accept: 'application/json', }) }
@@ -306,7 +306,7 @@ RSpec.describe 'Brainstorm API', type: :request do
         expect(response).to have_http_status(401)
       end
 
-			it 'returns an error' do
+			it 'returns an error message' do
         expect(json).not_to 			be_empty
         expect(json['errors']).to match_array(['Invalid Request'])
 
