@@ -6,11 +6,11 @@ class ApplicationController < ActionController::API
 
   # Returns the current authenticated user.
   def current_user
-		if payload
+    if payload
       @current_user ||= User.find(payload[:user_id])
     else
       @current_user = nil
-		end
+    end
   end
 
   # Returns the JWT session payload.

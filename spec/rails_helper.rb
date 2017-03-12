@@ -55,6 +55,6 @@ RSpec.configure do |config|
   # arbitrary gems may also be filtered via:
   # config.filter_gems_from_backtrace("gem name")
 
-	config.include RequestSpecHelper, type: :request
+  config.include RequestSpecHelper, type: :request
   config.include FactoryGirl::Syntax::Methods
 end

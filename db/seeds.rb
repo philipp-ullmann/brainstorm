@@ -13,6 +13,6 @@ philipp.terms.create! name: 'Health'
   parent = Term.find_by! name: h[:parent]
 
   h[:children].each do |child|
-  	parent.children.create! name: child, user: h[:user]
+    parent.children.create! name: child, user: h[:user]
   end
 end

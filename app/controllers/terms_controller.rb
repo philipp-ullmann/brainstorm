@@ -49,12 +49,12 @@ class TermsController < ApplicationController
   end
 
   def render_item(term, status)
-		if term.valid?
+    if term.valid?
       render json:   term.serialize(User.select(:id, :username).find(term.subtree.map(&:user_id)).group_by(&:id)),
              status: status
-		else
+    else
       render json:   { errors: term.errors.full_messages },
              status: :unprocessable_entity
-		end
+    end
   end
 end
