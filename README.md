@@ -127,3 +127,7 @@ Start the application with `docker-compose up -d`. Generate test data with `dock
   "children":   []
 }
 ```
+
+**Delete a term and it sub terms:**
+
+    curl -H "Authorization: <auth_token>" -X DELETE http://docker:3000/terms/2

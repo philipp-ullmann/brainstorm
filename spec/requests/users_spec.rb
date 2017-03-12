@@ -23,6 +23,10 @@ RSpec.describe 'User API', type: :request do
         expect(json['username']).to       eq(valid_attr[:username])
         expect(json['auth_token']).not_to be_empty
       end
+
+      it 'creates the user' do
+        expect(User.find_by(username: valid_attr[:username])).not_to be_nil
+      end
     end
 
     context 'without username' do
@@ -37,6 +41,10 @@ RSpec.describe 'User API', type: :request do
       it 'returns an error message' do
         expect(json).not_to       be_empty
         expect(json['errors']).to match_array(["Username can't be blank"])
+      end
+
+      it 'does no create the user' do
+        expect(User.count).to eq(0)
       end
     end
 
@@ -54,6 +62,10 @@ RSpec.describe 'User API', type: :request do
         expect(json['errors']).to match_array(["Password can't be blank",
                                                "Password confirmation can't be blank"])
       end
+
+      it 'does no create the user' do
+        expect(User.count).to eq(0)
+      end
     end
 
     context 'with a wrong password confirmation' do
@@ -68,6 +80,10 @@ RSpec.describe 'User API', type: :request do
       it 'returns an error message' do
         expect(json).not_to       be_empty
         expect(json['errors']).to match_array(["Password confirmation doesn't match Password"])
+      end
+
+      it 'does no create the user' do
+        expect(User.count).to eq(0)
       end
     end
 
@@ -85,6 +101,10 @@ RSpec.describe 'User API', type: :request do
       it 'returns an error message' do
         expect(json).not_to       be_empty
         expect(json['errors']).to match_array(['Username has already been taken'])
+      end
+
+      it 'does no create the user' do
+        expect(User.count).to eq(1)
       end
     end
   end

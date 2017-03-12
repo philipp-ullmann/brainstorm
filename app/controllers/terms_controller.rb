@@ -1,6 +1,7 @@
 # Brainstorming tree and term management.
 class TermsController < ApplicationController
   before_action :authenticate!
+  before_action :find_and_authorize, only: [:update, :destroy]
 
   # GET /
   # List all available brainstorming root terms.
@@ -33,20 +34,29 @@ class TermsController < ApplicationController
 
   # PUT /terms/:id
   # Updates the name of an existing term.
-  # TODO: Only allow updates of leaf terms.
   def update
-    term = Term.find params[:id]    
-    
-    authorize term
-    term.update_attributes(term_params)
+    @term.update_attributes(term_params)
 
-    render_item term, :ok
+    render_item @term, :ok
+  end
+
+  # DELETE /terms/:id
+  # Delete a term an it child terms.
+  def destroy
+    @term.destroy!
+
+    head :ok
   end
 
   private
 
   def term_params
     params.permit :name
+  end
+
+  def find_and_authorize
+    @term = Term.find params[:id]    
+    authorize @term
   end
 
   def render_item(term, status)
