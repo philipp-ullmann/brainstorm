@@ -3,6 +3,7 @@ require 'rails_helper'
 RSpec.describe 'Brainstorm API', type: :request do
   let!(:health)       { create(:term, name: 'Health') }
   let!(:sleep)        { create(:term, name: 'Sleep', parent: health) }
+  let!(:stress)       { create(:term, name: 'Stress', parent: health) }
   let!(:current_user) { health.user }
 	let(:valid_token)   { JsonWebToken.encode({ user_id: current_user.id }) }
 
@@ -66,13 +67,19 @@ RSpec.describe 'Brainstorm API', type: :request do
         expect(json['created_at']).not_to                be_empty
         expect(json['updated_at']).not_to                be_empty
         expect(json['children']).not_to                  be_empty
-        expect(json['children'].size).to                 eq(1)
+        expect(json['children'].size).to                 eq(2)
         expect(json['children'][0]['id']).to             eq(sleep.id)
         expect(json['children'][0]['name']).to           eq(sleep.name)
         expect(json['children'][0]['owned_by']).to       eq(sleep.user.username)
         expect(json['children'][0]['created_at']).not_to be_empty
         expect(json['children'][0]['updated_at']).not_to be_empty
         expect(json['children'][0]['children']).to       be_empty
+        expect(json['children'][1]['id']).to             eq(stress.id)
+        expect(json['children'][1]['name']).to           eq(stress.name)
+        expect(json['children'][1]['owned_by']).to       eq(stress.user.username)
+        expect(json['children'][1]['created_at']).not_to be_empty
+        expect(json['children'][1]['updated_at']).not_to be_empty
+        expect(json['children'][1]['children']).to       be_empty
       end
     end
 
@@ -222,6 +229,88 @@ RSpec.describe 'Brainstorm API', type: :request do
         expect(json['errors']).to match_array(["Couldn't find Term with 'id'=0"])
 
         expect(Term.find_by(name: 'Climbing')).to be_nil 
+      end
+    end
+  end
+
+  # PUT /terms/:id
+  # ############################################################
+
+  describe 'PUT /terms/:id' do
+
+    context 'when an user successfully updates the name of a term' do
+      before { put("/terms/#{sleep.id}",
+                   params:  { name: 'Exercise' },
+                   headers: { accept:        'application/json',
+                              authorization: JsonWebToken.encode({ user_id: sleep.user.id }) }) }
+
+			it 'returns status code 200' do
+        expect(response).to have_http_status(200)
+      end
+
+      it 'returns the term' do
+        expect(json).not_to               be_empty
+        expect(json['id']).to             eq(sleep.id)
+        expect(json['name']).to           eq('Exercise')
+        expect(json['owned_by']).to       eq(sleep.user.username)
+        expect(json['created_at']).not_to be_empty
+        expect(json['updated_at']).not_to be_empty
+        expect(json['children']).to       be_empty
+
+        expect(Term.find_by(name: 'Exercise')).not_to be_nil 
+      end
+    end
+
+    context 'when an user tries to update a term with an empty name' do
+      before { put("/terms/#{sleep.id}",
+                    params:  { name: '' },
+                    headers: { accept:        'application/json',
+                               authorization: JsonWebToken.encode({ user_id: sleep.user.id }) }) }
+
+			it 'returns status code 422' do
+        expect(response).to have_http_status(422)
+      end
+
+      it 'returns an error message' do
+        expect(json).not_to       be_empty
+        expect(json['errors']).to match_array(["Name can't be blank"])
+
+        expect(Term.find_by(name: sleep.name)).not_to be_nil 
+      end
+    end
+
+    context 'when an user tries to update a term with an name that already exists' do
+      before { put("/terms/#{sleep.id}",
+                    params:  { name: stress.name },
+                    headers: { accept:        'application/json',
+                               authorization: JsonWebToken.encode({ user_id: sleep.user.id }) }) }
+
+			it 'returns status code 422' do
+        expect(response).to have_http_status(422)
+      end
+
+      it 'returns an error message' do
+        expect(json).not_to       be_empty
+        expect(json['errors']).to match_array(['Name has already been taken'])
+
+        expect(Term.find_by(name: sleep.name)).not_to be_nil 
+      end
+    end
+
+    context 'when an not authenticated user tries to update a term' do
+      before { put("/terms/#{sleep.id}",
+                    params:  { name: 'Exercise' },
+                    headers: { accept: 'application/json', }) }
+
+			it 'returns status code 401' do
+        expect(response).to have_http_status(401)
+      end
+
+			it 'returns an error' do
+        expect(json).not_to 			be_empty
+        expect(json['errors']).to match_array(['Invalid Request'])
+
+        expect(Term.find_by(name: 'Exercise')).to be_nil 
       end
     end
   end

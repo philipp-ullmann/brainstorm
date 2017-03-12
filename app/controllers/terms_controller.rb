@@ -16,10 +16,7 @@ class TermsController < ApplicationController
   def show
     term = Term.roots.find params[:id]
 
-    # Load all necessary users within a single SQL query. Performance!
-    users = User.select(:id, :username).find(term.subtree.map(&:user_id)).group_by(&:id)
-
-    render json: term.serialize(users), status: :ok		
+    render_item term, :ok
   end
 
   # POST /terms
@@ -29,20 +26,35 @@ class TermsController < ApplicationController
     term        = Term.new term_params
     term.user   = current_user
     term.parent = parent
+    term.save
 
-		if term.save
-      users = [current_user].group_by(&:id)
+    render_item term, :created
+  end
 
-      render json: term.serialize(users), status: :created		
-		else
-      render json:   { errors: term.errors.full_messages },
-             status: :unprocessable_entity
-		end
+  # PUT /terms/:id
+  # Updates the name of an existing term.
+  # TODO: Check ownership
+  # TODO: Only allow updates of leaf terms.
+  def update
+    term = Term.find params[:id]    
+    term.update_attributes(term_params)
+
+    render_item term, :ok
   end
 
   private
 
   def term_params
     params.permit :name
+  end
+
+  def render_item(term, status)
+		if term.valid?
+      render json:   term.serialize(User.select(:id, :username).find(term.subtree.map(&:user_id)).group_by(&:id)),
+             status: status
+		else
+      render json:   { errors: term.errors.full_messages },
+             status: :unprocessable_entity
+		end
   end
 end

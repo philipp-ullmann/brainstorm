@@ -112,3 +112,18 @@ Start the application with `docker-compose up -d`. Generate test data with `dock
   "children":   []
 }
 ```
+
+**Update a term:**
+
+    curl -H "Content-Type: application/json" -H "Authorization: <auth_token>" -X PUT -d '{"name":"Stress"}' http://docker:3000/terms/2
+
+```json
+{
+  "id":         2,
+  "name":       "Stress",
+  "owned_by":   "philipp",
+  "created_at": "2017-03-04 09:06:33",
+  "updated_at": "2017-03-04 09:06:33",
+  "children":   []
+}
+```

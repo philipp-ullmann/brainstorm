@@ -4,5 +4,5 @@ Rails.application.routes.draw do
   post '/register', to: 'users#create',    as: 'register'
   post '/login',    to: 'sessions#create', as: 'login'
 
-  resources :terms, only: [:show, :create]
+  resources :terms, only: [:show, :create, :update]
 end
