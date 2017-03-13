@@ -9,10 +9,18 @@ class User < ApplicationRecord
     o.validates :password_confirmation
   end
 
+  def token
+    if id
+      @token ||= JsonWebToken.encode({ user_id: id })
+    else
+      raise 'JSON web token missing database id'
+    end
+  end
+
   # Serializes an user.
   def serialize
     { id:         id,
       username:   username,
-      auth_token: JsonWebToken.encode({ user_id: id }) }
+      auth_token: token }
   end
 end

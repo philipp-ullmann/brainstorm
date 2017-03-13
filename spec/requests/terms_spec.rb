@@ -4,8 +4,6 @@ RSpec.describe 'Brainstorm API', type: :request do
   let!(:health)       { create(:term, name: 'Health') }
   let!(:sleep)        { create(:term, name: 'Sleep', parent: health) }
   let!(:stress)       { create(:term, name: 'Stress', parent: health) }
-  let!(:current_user) { health.user }
-  let(:valid_token)   { JsonWebToken.encode({ user_id: current_user.id }) }
 
   # GET /
   # ############################################################
@@ -14,7 +12,7 @@ RSpec.describe 'Brainstorm API', type: :request do
 
     context 'with valid JWT token' do
       before { get('/', headers: { accept:        'application/json',
-                                   authorization: valid_token }) }
+                                   authorization: health.user.token }) }
 
       it 'returns status code 200' do
         expect(response).to have_http_status(200)
@@ -25,7 +23,7 @@ RSpec.describe 'Brainstorm API', type: :request do
         expect(json.size).to                 eq(1)
         expect(json[0]['id']).to             eq(health.id)
         expect(json[0]['name']).to           eq(health.name)
-        expect(json[0]['owned_by']).to       eq(current_user.username)
+        expect(json[0]['owned_by']).to       eq(health.user.username)
         expect(json[0]['created_at']).not_to be_empty
         expect(json[0]['updated_at']).not_to be_empty
       end
@@ -53,7 +51,7 @@ RSpec.describe 'Brainstorm API', type: :request do
     context 'when :id is a root term' do
       before { get("/terms/#{health.id}",
                    headers: { accept:        'application/json',
-                              authorization: valid_token }) }
+                              authorization: health.user.token }) }
 
       it 'returns status code 200' do
         expect(response).to have_http_status(200)
@@ -63,7 +61,7 @@ RSpec.describe 'Brainstorm API', type: :request do
         expect(json).not_to                              be_empty
         expect(json['id']).to                            eq(health.id)
         expect(json['name']).to                          eq(health.name)
-        expect(json['owned_by']).to                      eq(current_user.username)
+        expect(json['owned_by']).to                      eq(health.user.username)
         expect(json['created_at']).not_to                be_empty
         expect(json['updated_at']).not_to                be_empty
         expect(json['children']).not_to                  be_empty
@@ -86,7 +84,7 @@ RSpec.describe 'Brainstorm API', type: :request do
     context 'when :id is a child term' do
       before { get("/terms/#{sleep.id}",
                    headers: { accept:        'application/json',
-                              authorization: valid_token }) }
+                              authorization: health.user.token }) }
 
       it 'returns status code 404' do
         expect(response).to have_http_status(404)
@@ -121,7 +119,7 @@ RSpec.describe 'Brainstorm API', type: :request do
       before { post("/terms",
                     params:  { name: 'Climbing' },
                     headers: { accept:        'application/json',
-                               authorization: valid_token }) }
+                               authorization: health.user.token }) }
 
       it 'returns status code 201' do
         expect(response).to have_http_status(201)
@@ -131,7 +129,7 @@ RSpec.describe 'Brainstorm API', type: :request do
         expect(json).not_to               be_empty
         expect(json['id']).to             be_an(Integer)
         expect(json['name']).to           eq('Climbing')
-        expect(json['owned_by']).to       eq(current_user.username)
+        expect(json['owned_by']).to       eq(health.user.username)
         expect(json['created_at']).not_to be_empty
         expect(json['updated_at']).not_to be_empty
         expect(json['children']).to       be_empty
@@ -146,7 +144,7 @@ RSpec.describe 'Brainstorm API', type: :request do
       before { post("/terms",
                     params:  { name: '' },
                     headers: { accept:        'application/json',
-                               authorization: valid_token }) }
+                               authorization: health.user.token }) }
 
       it 'returns status code 422' do
         expect(response).to have_http_status(422)
@@ -166,7 +164,7 @@ RSpec.describe 'Brainstorm API', type: :request do
       before { post("/terms",
                     params:  { name: Faker::Lorem.characters(51) },
                     headers: { accept:        'application/json',
-                               authorization: valid_token }) }
+                               authorization: health.user.token }) }
 
       it 'returns status code 422' do
         expect(response).to have_http_status(422)
@@ -186,7 +184,7 @@ RSpec.describe 'Brainstorm API', type: :request do
       before { post("/terms",
                     params:  { name: health.name },
                     headers: { accept:        'application/json',
-                               authorization: valid_token }) }
+                               authorization: health.user.token }) }
 
       it 'returns status code 422' do
         expect(response).to have_http_status(422)
@@ -231,7 +229,7 @@ RSpec.describe 'Brainstorm API', type: :request do
       before { post("/terms?parent_id=#{health.id}",
                     params:  { name: 'Climbing' },
                     headers: { accept:        'application/json',
-                               authorization: valid_token }) }
+                               authorization: health.user.token }) }
 
       it 'returns status code 201' do
         expect(response).to have_http_status(201)
@@ -241,7 +239,7 @@ RSpec.describe 'Brainstorm API', type: :request do
         expect(json).not_to               be_empty
         expect(json['id']).to             be_an(Integer)
         expect(json['name']).to           eq('Climbing')
-        expect(json['owned_by']).to       eq(current_user.username)
+        expect(json['owned_by']).to       eq(health.user.username)
         expect(json['created_at']).not_to be_empty
         expect(json['updated_at']).not_to be_empty
         expect(json['children']).to       be_empty
@@ -256,7 +254,7 @@ RSpec.describe 'Brainstorm API', type: :request do
       before { post("/terms?parent_id=0",
                     params:  { name: 'Climbing' },
                     headers: { accept:        'application/json',
-                               authorization: valid_token }) }
+                               authorization: health.user.token }) }
 
       it 'returns status code 404' do
         expect(response).to have_http_status(404)
@@ -282,7 +280,7 @@ RSpec.describe 'Brainstorm API', type: :request do
       before { put("/terms/#{sleep.id}",
                    params:  { name: 'Exercise' },
                    headers: { accept:        'application/json',
-                              authorization: JsonWebToken.encode({ user_id: sleep.user.id }) }) }
+                              authorization: sleep.user.token }) }
 
       it 'returns status code 200' do
         expect(response).to have_http_status(200)
@@ -307,7 +305,7 @@ RSpec.describe 'Brainstorm API', type: :request do
       before { put("/terms/#{sleep.id}",
                     params:  { name: '' },
                     headers: { accept:        'application/json',
-                               authorization: JsonWebToken.encode({ user_id: sleep.user.id }) }) }
+                               authorization: sleep.user.token }) }
 
       it 'returns status code 422' do
         expect(response).to have_http_status(422)
@@ -327,7 +325,7 @@ RSpec.describe 'Brainstorm API', type: :request do
       before { put("/terms/#{sleep.id}",
                     params:  { name: Faker::Lorem.characters(51) },
                     headers: { accept:        'application/json',
-                               authorization: JsonWebToken.encode({ user_id: sleep.user.id }) }) }
+                               authorization: sleep.user.token }) }
 
       it 'returns status code 422' do
         expect(response).to have_http_status(422)
@@ -347,7 +345,7 @@ RSpec.describe 'Brainstorm API', type: :request do
       before { put("/terms/#{sleep.id}",
                     params:  { name: stress.name },
                     headers: { accept:        'application/json',
-                               authorization: JsonWebToken.encode({ user_id: sleep.user.id }) }) }
+                               authorization: sleep.user.token }) }
 
       it 'returns status code 422' do
         expect(response).to have_http_status(422)
@@ -367,7 +365,7 @@ RSpec.describe 'Brainstorm API', type: :request do
       before { put("/terms/#{sleep.id}",
                     params:  { name: 'Exercise' },
                     headers: { accept:        'application/json',
-                               authorization: JsonWebToken.encode({ user_id: health.user.id }) }) }
+                               authorization: health.user.token }) }
 
       it 'returns status code 401' do
         expect(response).to have_http_status(401)
@@ -411,7 +409,7 @@ RSpec.describe 'Brainstorm API', type: :request do
     context 'when it is a root term' do
       before { delete("/terms/#{health.id}",
                       headers: { accept:        'application/json',
-                                 authorization: JsonWebToken.encode({ user_id: health.user.id }) }) }
+                                 authorization: health.user.token }) }
 
       it 'returns status code 200' do
         expect(response).to have_http_status(200)
@@ -425,7 +423,7 @@ RSpec.describe 'Brainstorm API', type: :request do
     context 'as an user that does not own the term' do
       before { delete("/terms/#{health.id}",
                       headers: { accept:        'application/json',
-                                 authorization: JsonWebToken.encode({ user_id: sleep.user.id }) }) }
+                                 authorization: sleep.user.token }) }
 
       it 'returns status code 401' do
         expect(response).to have_http_status(401)
