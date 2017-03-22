@@ -1,9 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe 'Brainstorm API', type: :request do
-  let!(:health)       { create(:term, name: 'Health') }
-  let!(:sleep)        { create(:term, name: 'Sleep', parent: health) }
-  let!(:stress)       { create(:term, name: 'Stress', parent: health) }
+  let!(:health) { create(:term, name: 'Health') }
+  let!(:sleep)  { create(:term, name: 'Sleep', parent: health) }
+  let!(:stress) { create(:term, name: 'Stress', parent: health) }
 
   # GET /
   # ############################################################
@@ -13,7 +13,7 @@ RSpec.describe 'Brainstorm API', type: :request do
     context 'when the user is authenticated' do
       before { get_terms(health.user.token) }
 
-      it 'returns status code 200' do
+      it 'returns a status code of 200' do
         expect(response).to have_http_status(200)
       end
 
@@ -31,11 +31,11 @@ RSpec.describe 'Brainstorm API', type: :request do
     context 'when the user is not authenticated' do
       before { get_terms }
 
-      it 'returns status code 401' do
+      it 'returns a status code of 401' do
         expect(response).to have_http_status(401)
       end
 
-      it 'returns a not authorized message' do
+      it 'returns a not authorized error message' do
         expect(json).not_to       be_empty
         expect(json['errors']).to match_array(['You are not authorized to perform this action'])
       end
@@ -50,11 +50,11 @@ RSpec.describe 'Brainstorm API', type: :request do
     context 'when it is a root term' do
       before { get_term(health, health.user.token) }
 
-      it 'returns status code 200' do
+      it 'returns a status code of 200' do
         expect(response).to have_http_status(200)
       end
 
-      it 'returns the tree' do
+      it 'returns the brainstorming tree' do
         expect(json).not_to                              be_empty
         expect(json['id']).to                            eq(health.id)
         expect(json['name']).to                          eq(health.name)
@@ -81,11 +81,11 @@ RSpec.describe 'Brainstorm API', type: :request do
     context 'when it is a child term' do
       before { get_term(sleep, health.user.token) }
 
-      it 'returns status code 404' do
+      it 'returns a status code of 404' do
         expect(response).to have_http_status(404)
       end
 
-      it 'returns a could not be found message' do
+      it 'returns a could not be found error message' do
         expect(json).not_to       be_empty
         expect(json['errors']).to match_array(["Couldn't find Term with 'id'=#{sleep.id} [WHERE `terms`.`ancestry` IS NULL]"])
       end
@@ -94,11 +94,11 @@ RSpec.describe 'Brainstorm API', type: :request do
     context 'when the user is not authenticated' do
       before { get_term(health) }
 
-      it 'returns status code 401' do
+      it 'returns a status code of 401' do
         expect(response).to have_http_status(401)
       end
 
-      it 'returns a not authorized message' do
+      it 'returns a not authorized error message' do
         expect(json).not_to       be_empty
         expect(json['errors']).to match_array(['You are not authorized to perform this action'])
       end
@@ -113,7 +113,7 @@ RSpec.describe 'Brainstorm API', type: :request do
     context 'when the name is valid' do
       before { post_term('Climbing', health.user.token) }
 
-      it 'returns status code 201' do
+      it 'returns a status code of 201' do
         expect(response).to have_http_status(201)
       end
 
@@ -135,16 +135,16 @@ RSpec.describe 'Brainstorm API', type: :request do
     context 'when the name is empty' do
       before { post_term('', health.user.token) }
 
-      it 'returns status code 422' do
+      it 'returns a status code of 422' do
         expect(response).to have_http_status(422)
       end
 
-      it 'returns a name can not be blank message' do
+      it 'returns a can not be blank error message' do
         expect(json).not_to       be_empty
         expect(json['errors']).to match_array(["Name can't be blank"])
       end
 
-      it 'does not persists the term' do
+      it 'does not persist the term' do
         expect(Term.roots.find_by(name: '')).to be_nil
       end
     end
@@ -152,16 +152,16 @@ RSpec.describe 'Brainstorm API', type: :request do
     context 'when the name has 51 characters' do
       before { post_term(Faker::Lorem.characters(51), health.user.token) }
 
-      it 'returns status code 422' do
+      it 'returns a status code of 422' do
         expect(response).to have_http_status(422)
       end
 
-      it 'returns a name is too long message' do
+      it 'returns a is too long error message' do
         expect(json).not_to       be_empty
         expect(json['errors']).to match_array(['Name is too long (maximum is 50 characters)'])
       end
 
-      it 'does not persists the term' do
+      it 'does not persist the term' do
         expect(Term.roots.count).to be(1)
       end
     end
@@ -169,16 +169,16 @@ RSpec.describe 'Brainstorm API', type: :request do
     context 'when the name already exists' do
       before { post_term(health.name, health.user.token) }
 
-      it 'returns status code 422' do
+      it 'returns a status code of 422' do
         expect(response).to have_http_status(422)
       end
 
-      it 'returns a name already exists message' do
+      it 'returns a already exists error message' do
         expect(json).not_to       be_empty
         expect(json['errors']).to match_array(['Name has already been taken'])
       end
 
-      it 'does not persists the term' do
+      it 'does not persist the term' do
         expect(Term.roots.count).to be(1)
       end
     end
@@ -186,16 +186,16 @@ RSpec.describe 'Brainstorm API', type: :request do
     context 'when the user is not authenticated' do
       before { post_term('Climbing') }
 
-      it 'returns status code 401' do
+      it 'returns a status code of 401' do
         expect(response).to have_http_status(401)
       end
 
-      it 'returns a not authorized message' do
+      it 'returns a not authorized error message' do
         expect(json).not_to       be_empty
         expect(json['errors']).to match_array(['You are not authorized to perform this action'])
       end
 
-      it 'does not persists the term' do
+      it 'does not persist the term' do
         expect(Term.roots.find_by(name: 'Climbing')).to be_nil
       end
     end
@@ -209,11 +209,11 @@ RSpec.describe 'Brainstorm API', type: :request do
     context 'when the name is valid' do
       before { post_term('Climbing', health.user.token, health.id) }
 
-      it 'returns status code 201' do
+      it 'returns a status code of 201' do
         expect(response).to have_http_status(201)
       end
 
-      it 'returns the child tree' do
+      it 'returns the term tree' do
         expect(json).not_to               be_empty
         expect(json['id']).to             be_an(Integer)
         expect(json['name']).to           eq('Climbing')
@@ -231,16 +231,16 @@ RSpec.describe 'Brainstorm API', type: :request do
     context 'when the parent id does not exist' do
       before { post_term('Climbing', health.user.token, 0) }
 
-      it 'returns status code 404' do
+      it 'returns a status code of 404' do
         expect(response).to have_http_status(404)
       end
 
-      it 'returns a not found message' do
+      it 'returns a not found error message' do
         expect(json).not_to       be_empty
         expect(json['errors']).to match_array(["Couldn't find Term with 'id'=0"])
       end
 
-      it 'does not persists the term' do
+      it 'does not persist the term' do
         expect(Term.find_by(name: 'Climbing')).to be_nil 
       end
     end
@@ -254,7 +254,7 @@ RSpec.describe 'Brainstorm API', type: :request do
     context 'when the name is valid' do
       before { put_term(sleep.id, 'Exercise', sleep.user.token) }
 
-      it 'returns status code 200' do
+      it 'returns a status code of 200' do
         expect(response).to have_http_status(200)
       end
 
@@ -276,16 +276,16 @@ RSpec.describe 'Brainstorm API', type: :request do
     context 'when the name is empty' do
       before { put_term(sleep.id, '', sleep.user.token) }
 
-      it 'returns status code 422' do
+      it 'returns a status code of 422' do
         expect(response).to have_http_status(422)
       end
 
-      it 'returns a name can not be blank message' do
+      it 'returns a can not be blank error message' do
         expect(json).not_to       be_empty
         expect(json['errors']).to match_array(["Name can't be blank"])
       end
 
-      it 'does not persists the update' do
+      it 'does not persist the update' do
         expect(Term.find_by(name: sleep.name)).not_to be_nil 
       end
     end
@@ -293,16 +293,16 @@ RSpec.describe 'Brainstorm API', type: :request do
     context 'when the name has 51 characters' do
       before { put_term(sleep.id, Faker::Lorem.characters(51), sleep.user.token) }
 
-      it 'returns status code 422' do
+      it 'returns a status code of 422' do
         expect(response).to have_http_status(422)
       end
 
-      it 'returns a name is too long message' do
+      it 'returns a is too long error message' do
         expect(json).not_to       be_empty
         expect(json['errors']).to match_array(['Name is too long (maximum is 50 characters)'])
       end
 
-      it 'does not persists the update' do
+      it 'does not persist the update' do
         expect(Term.find_by(name: sleep.name)).not_to be_nil 
       end
     end
@@ -310,50 +310,50 @@ RSpec.describe 'Brainstorm API', type: :request do
     context 'when the name already exists' do
       before { put_term(sleep.id, stress.name, sleep.user.token) }
 
-      it 'returns status code 422' do
+      it 'returns a status code of 422' do
         expect(response).to have_http_status(422)
       end
 
-      it 'returns a name already exists message' do
+      it 'returns a already exists error message' do
         expect(json).not_to       be_empty
         expect(json['errors']).to match_array(['Name has already been taken'])
       end
 
-      it 'does not persists the update' do
+      it 'does not persist the update' do
         expect(Term.find_by(name: sleep.name)).not_to be_nil 
       end
     end
 
-    context 'when the user does not own it' do
+    context 'when the user is not the owner' do
       before { put_term(sleep.id, 'Exercise', health.user.token) }
 
-      it 'returns status code 401' do
+      it 'returns a status code of 401' do
         expect(response).to have_http_status(401)
       end
 
-      it 'returns a not authorized message' do
+      it 'returns a not authorized error message' do
         expect(json).not_to       be_empty
         expect(json['errors']).to match_array(['You are not authorized to perform this action'])
       end
 
-      it 'does not persists the update' do
+      it 'does not persist the update' do
         expect(Term.find_by(name: 'Exercise')).to be_nil 
       end
     end
 
-    context 'when it does not exist' do
+    context 'when the term does not exist' do
       before { put_term(0, 'Exercise', sleep.user.token) }
 
-      it 'returns status code 404' do
+      it 'returns a status code of 404' do
         expect(response).to have_http_status(404)
       end
 
-      it 'returns a not found message' do
+      it 'returns a not found error message' do
         expect(json).not_to       be_empty
         expect(json['errors']).to match_array(["Couldn't find Term with 'id'=0"])
       end
 
-      it 'does not persists the update' do
+      it 'does not persist the update' do
         expect(Term.find_by(name: 'Exercise')).to be_nil 
       end
     end
@@ -361,16 +361,16 @@ RSpec.describe 'Brainstorm API', type: :request do
     context 'when the user is not authenticated' do
       before { put_term(sleep.id, 'Exercise') }
 
-      it 'returns status code 401' do
+      it 'returns a status code of 401' do
         expect(response).to have_http_status(401)
       end
 
-      it 'returns a not authorized message' do
+      it 'returns a not authorized error message' do
         expect(json).not_to       be_empty
         expect(json['errors']).to match_array(['You are not authorized to perform this action'])
       end
 
-      it 'does not persists the update' do
+      it 'does not persist the update' do
         expect(Term.find_by(name: 'Exercise')).to be_nil 
       end
     end
@@ -384,23 +384,36 @@ RSpec.describe 'Brainstorm API', type: :request do
     context 'when it is a root term' do
       before { delete_term(health.id, health.user.token) }
 
-      it 'returns status code 200' do
+      it 'returns a status code of 200' do
         expect(response).to have_http_status(200)
       end
 
-      it 'deletes the tree' do
+      it 'deletes the brainstorming tree' do
         expect(Term.count).to eq(0)
       end
     end
 
-    context 'when the user does not own it' do
+    context 'when it is a child term' do
+      before { delete_term(sleep.id, sleep.user.token) }
+
+      it 'returns a status code of 200' do
+        expect(response).to have_http_status(200)
+      end
+
+      it 'deletes the term tree' do
+        expect(Term.count).to eq(2)
+        expect(Term.find_by(name: sleep.name)).to be_nil
+      end
+    end
+
+    context 'when the user is not the owner' do
       before { delete_term(health.id, sleep.user.token) }
 
-      it 'returns status code 401' do
+      it 'returns a status code of 401' do
         expect(response).to have_http_status(401)
       end
 
-      it 'returns a not authorized message' do
+      it 'returns a not authorized error message' do
         expect(json).not_to       be_empty
         expect(json['errors']).to match_array(['You are not authorized to perform this action'])
       end
@@ -410,14 +423,14 @@ RSpec.describe 'Brainstorm API', type: :request do
       end
     end
 
-    context 'when it does not exist' do
+    context 'when the term does not exist' do
       before { delete_term(0, health.user.token) }
 
-      it 'returns status code 404' do
+      it 'returns a status code of 404' do
         expect(response).to have_http_status(404)
       end
 
-      it 'returns a could not find message' do
+      it 'returns a could not find error message' do
         expect(json).not_to       be_empty
         expect(json['errors']).to match_array(["Couldn't find Term with 'id'=0"])
       end
@@ -430,11 +443,11 @@ RSpec.describe 'Brainstorm API', type: :request do
     context 'when the user is not authenticated' do
       before { delete_term(health.id) }
 
-      it 'returns status code 401' do
+      it 'returns a status code of 401' do
         expect(response).to have_http_status(401)
       end
 
-      it 'returns a not authorized message' do
+      it 'returns a not authorized error message' do
         expect(json).not_to       be_empty
         expect(json['errors']).to match_array(['You are not authorized to perform this action'])
       end
