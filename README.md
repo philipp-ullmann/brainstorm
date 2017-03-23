@@ -14,7 +14,7 @@ Used technologies and versions:
 * rspec-rails    3.5.2
 * JSON Web Token authentication
 
-Start the application with `docker-compose up -d`. Generate test data with `docker-compose exec web rake db:seed`. The application run's on port 3000. Setup test database with `docker-compose exec web rake db:setup`. Run tests with `docker-compose exec web rake spec`.
+Start the application with `docker-compose up -d`. Generate test data with `docker-compose exec web bin/rake db:seed`. The application run's on port 3000. Setup test database with `docker-compose exec web bin/rake db:setup`. Run tests with `docker-compose exec web bin/rake spec`.
 
 ## API
 

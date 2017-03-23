@@ -13,14 +13,8 @@ gem 'ancestry', '2.2.2'
 gem 'jwt',      '1.5.6'
 gem 'pundit',   '1.1.0'
 
-group :development do
-  gem 'listen',                '3.0.8'
-  gem 'spring',                '2.0.1'
-  gem 'spring-watcher-listen', '2.0.1'
-end
-
 group :development, :test do
-  gem 'byebug',      '9.0.6', platform: :mri
+  gem 'byebug',      '9.0.6'
   gem 'rspec-rails', '3.5.2'
 end
 
